@@ -34,7 +34,7 @@ int main(int argc, char* args[])
 			}
 			else
 			{
-				SDL_Texture* playerSprite = IMG_LoadTexture(renderer, "Sprites\\hudfrgfdgdgdfdg.png");
+				SDL_Texture* playerSprite = IMG_LoadTexture(renderer, "Sprites\\hudPlayer_green.png");
 				SDL_Texture* coinSprite = IMG_LoadTexture(renderer, "Sprites\\coinGold.png");
 				SDL_Texture* spikeSprite = IMG_LoadTexture(renderer, "Sprites\\spikes.png");
 
