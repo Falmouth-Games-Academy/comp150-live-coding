@@ -153,8 +153,10 @@
     <ClInclude Include="Coin.h" />
     <ClInclude Include="CoinGame.h" />
     <ClInclude Include="comp150-live-coding.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="InitialisationError.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Spike.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Texture.h" />
@@ -163,7 +165,9 @@
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="CoinGame.cpp" />
     <ClCompile Include="comp150-live-coding.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InitialisationError.cpp" />
+    <ClCompile Include="Spike.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

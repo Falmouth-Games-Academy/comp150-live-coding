@@ -2,11 +2,12 @@
 
 #include "GameObject.h"
 
-class Coin : public GameObject
+class Spike :
+	public GameObject
 {
 public:
-	Coin(CoinGame* game);
-	~Coin();
+	Spike(CoinGame* game);
+	~Spike();
 
 	virtual void update();
 };

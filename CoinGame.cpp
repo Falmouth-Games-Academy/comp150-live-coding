@@ -2,14 +2,10 @@
 #include "CoinGame.h"
 #include "InitialisationError.h"
 
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 600;
-const int SPRITE_SIZE = 64;
-const int PLAYER_MOVEMENT_SPEED = 4;
-const int NUM_COINS = 20;
-const int NUM_SPIKES = 6;
-
 CoinGame::CoinGame()
+	: playerSprite("Sprites\\hudPlayer_green.png"),
+	coinSprite("Sprites\\coinGold.png"),
+	spikeSprite("Sprites\\spikes.png")
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
@@ -27,18 +23,15 @@ CoinGame::CoinGame()
 	{
 		throw InitialisationError("SDL_CreateRenderer failed");
 	}
-
-	playerSprite = new Texture(renderer, "Sprites\\hudPlayer_green.png");
-	coinSprite = new Texture(renderer, "Sprites\\coinGold.png");
-	spikeSprite = new Texture(renderer, "Sprites\\spikes.png");
 }
 
 
 CoinGame::~CoinGame()
 {
-	delete playerSprite;
-	delete coinSprite;
-	delete spikeSprite;
+	for (GameObject* ob : objects)
+	{
+		delete ob;
+	}
 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
@@ -46,28 +39,32 @@ CoinGame::~CoinGame()
 	SDL_Quit();
 }
 
+void CoinGame::killPlayer()
+{
+	MessageBoxA(NULL, "You died :(", "Game over", MB_OK);
+	running = false;
+}
+
+void CoinGame::collectCoin()
+{
+	coinsCollected++;
+}
+
 void CoinGame::run()
 {
-	bool running = true;
-	int playerX = WINDOW_WIDTH / 2;
-	int playerY = WINDOW_HEIGHT / 2;
-	int coinsCollected = 0;
+	running = true;
+	playerX = WINDOW_WIDTH / 2;
+	playerY = WINDOW_HEIGHT / 2;
+	coinsCollected = 0;
 
 	// Initialise coins
-	std::vector<int> coinX, coinY, spikeX, spikeY;
 	for (int i = 0; i < NUM_COINS; i++)
 	{
-		int x = rand() % WINDOW_WIDTH;
-		int y = rand() % WINDOW_HEIGHT;
-		coinX.push_back(x);
-		coinY.push_back(y);
+		objects.push_back(new Coin(this));
 	}
 	for (int i = 0; i < NUM_SPIKES; i++)
 	{
-		int x = rand() % WINDOW_WIDTH;
-		int y = rand() % WINDOW_HEIGHT;
-		spikeX.push_back(x);
-		spikeY.push_back(y);
+		objects.push_back(new Spike(this));
 	}
 
 	while (running)
@@ -102,33 +99,20 @@ void CoinGame::run()
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
 
-		// Check and draw the spikes
-		for (int i = 0; i < spikeX.size(); i++)
+		// Update all objects
+		for (GameObject* ob : objects)
 		{
-			double distance = sqrt(pow(playerX - spikeX[i], 2) + pow(playerY - spikeY[i], 2));
-			if (distance < SPRITE_SIZE / 2)
-			{
-				MessageBoxA(NULL, "You died :(", "Game over", MB_OK);
-				running = false;
-			}
-
-			spikeSprite->render(renderer, spikeX[i], spikeY[i], SPRITE_SIZE, SPRITE_SIZE);
+			ob->update();
 		}
 
-		// Check and draw the coins
-		for (int i = 0; i < coinX.size(); i++)
+		// Check for dead objects
+		for (int i = 0; i < objects.size(); i++)
 		{
-			double distance = sqrt(pow(playerX - coinX[i], 2) + pow(playerY - coinY[i], 2));
-			if (distance < SPRITE_SIZE / 2)
+			if (objects[i]->getIsDead())
 			{
-				coinsCollected++;
-				coinX.erase(coinX.begin() + i); // Erase the coin from the lists
-				coinY.erase(coinY.begin() + i);
-				i--;                            // Check the new i'th coin on the next iteration
-				continue;                       // Skip to the next iteration
+				objects.erase(objects.begin() + i);
+				i--;
 			}
-
-			coinSprite->render(renderer, coinX[i], coinY[i], SPRITE_SIZE, SPRITE_SIZE);
 		}
 
 		// Check win
@@ -138,8 +122,14 @@ void CoinGame::run()
 			running = false;
 		}
 
+		// Render all objects
+		for (GameObject* ob : objects)
+		{
+			ob->render(renderer);
+		}
+
 		// Draw the player
-		playerSprite->render(renderer, playerX, playerY, SPRITE_SIZE, SPRITE_SIZE);
+		playerSprite.render(renderer, playerX, playerY, SPRITE_SIZE, SPRITE_SIZE);
 
 		// Present the rendered display
 		SDL_RenderPresent(renderer);

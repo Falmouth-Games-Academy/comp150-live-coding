@@ -3,7 +3,7 @@
 class Texture
 {
 public:
-	Texture(SDL_Renderer* renderer, const std::string& fileName);
+	Texture(const std::string& fileName);
 	~Texture();
 
 	SDL_Texture* getTexture() { return texture; }
@@ -11,6 +11,7 @@ public:
 	void render(SDL_Renderer* renderer, int x, int y, int width, int height);
 	
 private:
+	std::string fileName;
 	SDL_Texture* texture;
 };
 
